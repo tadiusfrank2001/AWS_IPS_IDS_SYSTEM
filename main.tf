@@ -155,13 +155,45 @@ resource "aws_instance" "ec2_compromised" {
   associate_public_ip_address = true
 
 # run a bash script on first boot to update operating system and install curl binary
-user_data = file("${path.module}/scripts/setup_server.sh")
+user_data = file("${path.module}/scripts/compromised_server_setup.sh")
 
   tags = {
     Name = "EC2-Compromised"
     Type = "Victim"
   }
 }
+
+
+# Creates a small EC2 instance using the Amazon Linux AMI 2023, which simulates the attacker system.
+# Placed in a different subnet in VPC for separation
+# Malicious instance (the attacker)
+resource "aws_instance" "ec2_malicious" {
+  ami                         = data.aws_ami.amazon_linux_2023.id
+  instance_type               = "t3.micro"
+  key_name                    = aws_key_pair.gd_lab_keypair.key_name
+  subnet_id                   = length(data.aws_subnets.default.ids) > 1 ? data.aws_subnets.default.ids[1] : data.aws_subnets.default.ids[0]
+  vpc_security_group_ids      = [aws_security_group.gd_lab_sg.id]
+  associate_public_ip_address = true
+
+# Run a bash script to update operating system, install Python, run a http server on port 80
+ user_data = file("${path.module}/scripts/malicious_server_setup.sh")
+
+  tags = {
+    Name = "EC2-Malicious"
+    Type = "Attacker"
+  }
+}
+
+# Elastic IP for malicious instance (this becomes our "known threat IP")
+resource "aws_eip" "malicious_ip" {
+  instance = aws_instance.ec2_malicious.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "Malicious Threat IP"
+  }
+}
+
 
 
 
