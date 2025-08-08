@@ -439,6 +439,26 @@ resource "aws_guardduty_threatintelset" "gd_threat_intel" {
 
 
 
+# ===== SECURITY HUB =====
+
+# Enable Security Hub to aggregate GuardDuty findings
+resource "aws_securityhub_account" "gd_lab_security_hub" {
+  enable_default_standards = true
+
+  depends_on = [aws_guardduty_detector.gd_lab_detector]
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
