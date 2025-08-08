@@ -81,4 +81,17 @@ data "aws_region" "current" {}
 
 
 
+# ===== SSH KEY PAIR =====
+
+# Creates a new SSH key pair in AWS using your local public key (.pub). 
+# You'll use the private key to SSH into your EC2 instances.
+resource "aws_key_pair" "gd_lab_keypair" {
+  key_name   = "gd-lab-keypair-${random_id.lab_suffix.hex}"
+  public_key = file(var.public_key_path)
+
+  tags = {
+    Name = "GuardDuty Lab Key Pair"
+  }
+}
+
 
