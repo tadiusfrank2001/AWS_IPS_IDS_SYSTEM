@@ -95,3 +95,42 @@ resource "aws_key_pair" "gd_lab_keypair" {
 }
 
 
+# ===== SECURITY GROUP =====
+
+# Creates a firewall (security group) for your EC2 instances. 
+# It controls what traffic is allowed in (ingress) and out (egress).
+resource "aws_security_group" "gd_lab_sg" {
+  name        = "gd-lab-sg"
+  description = "Security group for GuardDuty lab EC2 Instances"
+  vpc_id      = data.aws_vpc.default.id
+
+# The ingress (incoming) traffic will be allowed from your local machine (your public IP) on port 22 (SSH) on the AWS instance.
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+# HTTP for malicious communication simulation
+  ingress {
+    description = "HTTP for threat simulation"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+# The egress (outgoing) traffic will be allowed to anywhere
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+   tags = {
+    Name = "GuardDuty Lab Security Group"
+  }
+}
+
