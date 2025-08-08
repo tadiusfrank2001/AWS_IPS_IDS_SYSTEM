@@ -478,7 +478,6 @@ resource "aws_sns_topic_subscription" "email_alerts" {
 
 
 # ===== IAM ROLE FOR LAMBDA =====
-
 # IAM role for the Lambda function to stop compromised instances
 resource "aws_iam_role" "gd_lab_lambda_role" {
   name = "gd-lab-lambda-role-${random_id.lab_suffix.hex}"
@@ -507,7 +506,6 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-
 # Custom policy for Lambda to stop EC2 instances and send SNS
 resource "aws_iam_role_policy" "lambda_ec2_policy" {
   name = "LambdaEC2Policy"
@@ -529,66 +527,11 @@ resource "aws_iam_role_policy" "lambda_ec2_policy" {
   })
 }
 
-
-# Archive the Lambda function code
+# Archive the Lambda function code from external file
 data "archive_file" "lambda_zip" {
   type        = "zip"
   output_path = "/tmp/lambda_function.zip"
-  source {
-    content = <<EOF
-import boto3
-import json
-
-def lambda_handler(event, context):
-    print("Received GuardDuty event:", json.dumps(event, indent=2))
-    
-    try:
-        # Extract instance ID from GuardDuty finding
-        instance_id = event['detail']['resource']['instanceDetails']['instanceId']
-        print(f"Found compromised instance: {instance_id}")
-        
-        # Stop the compromised instance
-        ec2 = boto3.client('ec2')
-        response = ec2.stop_instances(InstanceIds=[instance_id])
-        print(f"Stop instance response: {response}")
-        
-        # Send notification via SNS
-        sns = boto3.client('sns')
-        message = f"""
-GuardDuty Security Alert - Automated Response Triggered
-
-Compromised Instance: {instance_id}
-Action Taken: Instance automatically stopped
-Finding Type: {event['detail']['type']}
-Severity: {event['detail']['severity']}
-Time: {event['detail']['updatedAt']}
-
-This is an automated security response from your GuardDuty lab.
-"""
-        
-        sns.publish(
-            TopicArn='${aws_sns_topic.gd_lab_alerts.arn}',
-            Message=message,
-            Subject='🚨 GuardDuty Alert: Instance Auto-Stopped'
-        )
-        
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'message': f'Successfully stopped compromised instance {instance_id}',
-                'instanceId': instance_id
-            })
-        }
-        
-    except Exception as e:
-        print(f"Error processing GuardDuty event: {str(e)}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'error': str(e)})
-        }
-EOF
-    filename = "lambda_function.py"
-  }
+  source_file = "${path.module}/scripts/lambda_function.py"
 }
 
 # Lambda function for automated incident response
