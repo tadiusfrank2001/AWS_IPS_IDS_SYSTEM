@@ -134,3 +134,36 @@ resource "aws_security_group" "gd_lab_sg" {
   }
 }
 
+# ===== EC2 INSTANCES =====
+
+# Creates a small EC2 instance using the Amazon Linux 2 AMI, which simulates the compromised system. 
+# This will be the instance that gets caught making malicious traffic.
+
+# NOTE: t2.micro is free-tier eligible
+# Uses first subnet available
+# Gets a public IP
+# Uses your key pair and security group
+
+
+# Compromised instance (the victim)
+resource "aws_instance" "ec2_compromised" {
+  ami                         = data.aws_ami.amazon_linux_2.id
+  instance_type               = "t2.micro"
+  key_name                    = aws_key_pair.gd_lab_keypair.key_name
+  subnet_id                   = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids      = [aws_security_group.gd_lab_sg.id]
+  associate_public_ip_address = true
+
+# run a bash script on first boot to update operating system and install curl binary
+user_data = file("${path.module}/scripts/setup_server.sh")
+
+  tags = {
+    Name = "EC2-Compromised"
+    Type = "Victim"
+  }
+}
+
+
+
+
+
