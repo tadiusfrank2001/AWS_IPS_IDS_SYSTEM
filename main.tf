@@ -385,3 +385,62 @@ resource "aws_s3_object" "threat_list" {
 
 
 
+
+
+
+
+
+
+# ===== GUARDDUTY =====
+
+# Enable GuardDuty detector
+resource "aws_guardduty_detector" "gd_lab_detector" {
+  enable = true
+
+  datasources {
+    s3_logs {
+      enable = true
+    }
+    kubernetes {
+      audit_logs {
+        enable = false
+      }
+    }
+    malware_protection {
+      scan_ec2_instance_with_findings {
+        ebs_volumes {
+          enable = true
+        }
+      }
+    }
+  }
+
+  tags = {
+    Name = "GuardDuty Lab Detector"
+  }
+}
+
+# Configure GuardDuty to use our custom threat list
+resource "aws_guardduty_threatintelset" "gd_threat_intel" {
+  activate    = true
+  detector_id = aws_guardduty_detector.gd_lab_detector.id
+  format      = "TXT"
+  location    = "https://${aws_s3_bucket.gd_threat_list.bucket}.s3.${data.aws_region.current.name}.amazonaws.com/threatlist.txt"
+  name        = "Lab Threat Intelligence"
+
+  depends_on = [
+    aws_s3_object.threat_list,
+    aws_s3_bucket_policy.gd_threat_list_policy
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
