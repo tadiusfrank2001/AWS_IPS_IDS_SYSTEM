@@ -1,4 +1,4 @@
-# AWS GuardDuty Security Lab 🛡️
+# AWS GuardDuty Security Simulation 🛡️
 
 A hands-on Terraform project that creates a realistic AWS security lab environment to demonstrate threat detection, incident response, and automated security remediation using AWS GuardDuty.
 
