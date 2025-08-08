@@ -439,6 +439,8 @@ resource "aws_guardduty_threatintelset" "gd_threat_intel" {
 
 
 
+
+
 # ===== SECURITY HUB =====
 
 # Enable Security Hub to aggregate GuardDuty findings
@@ -447,6 +449,34 @@ resource "aws_securityhub_account" "gd_lab_security_hub" {
 
   depends_on = [aws_guardduty_detector.gd_lab_detector]
 }
+
+
+
+
+
+
+
+
+
+# ===== SNS FOR ALERTS =====
+
+# SNS topic for sending security alerts
+resource "aws_sns_topic" "gd_lab_alerts" {
+  name = "gd-lab-alerts-${random_id.lab_suffix.hex}"
+
+  tags = {
+    Name = "GuardDuty Lab Alerts"
+  }
+}
+
+# Email subscription to SNS topic (requires manual confirmation)
+resource "aws_sns_topic_subscription" "email_alerts" {
+  topic_arn = aws_sns_topic.gd_lab_alerts.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
+}
+
+
 
 
 
