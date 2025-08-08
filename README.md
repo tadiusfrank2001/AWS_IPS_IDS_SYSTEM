@@ -1,27 +1,26 @@
-# 🛡️ My AWS EC2 Compromise Detection Lab (Terraform Edition)
+# AWS GuardDuty Security Lab 🛡️
 
-This is a personal project where I simulate an EC2 compromise scenario using AWS services, and automate the detection and remediation process using **Terraform**.
+A hands-on Terraform project that creates a realistic AWS security lab environment to demonstrate threat detection, incident response, and automated security remediation using AWS GuardDuty.
 
-I built and destroyed a complete security automation pipeline entirely with code — and it's Free Tier friendly as long as I clean everything up afterward.
+## 🎯 Purpose
 
-----
+This project was created to deepen my understanding of AWS security services and practice building automated incident response systems. It simulates a real-world scenario where a compromised EC2 instance communicates with a known malicious IP address, triggering GuardDuty alerts and automated remediation.
 
-## 🚀 What This Project Does
+## 🏗️ Architecture Overview
 
-- Creates two EC2 instances:
-  - `EC2-Compromised` (Amazon Linux 2)
-  - `EC2-Malicious` (Amazon Linux 2023)
-- Assigns a static Elastic IP to the malicious instance
-- Hosts a threat list in S3 containing that Elastic IP
-- Configures Amazon GuardDuty with the custom threat list
-- Simulates malicious behavior from EC2-Compromised
-- Triggers GuardDuty findings
-- Sends alert notifications via SNS (optional)
-- Automatically stops the compromised instance using Lambda triggered by EventBridge
+The lab creates a complete security monitoring and response pipeline:
+
+- **Two EC2 instances**: One "compromised" victim and one "malicious" attacker
+- **GuardDuty**: Monitors for suspicious network activity and threats
+- **Custom Threat Intelligence**: S3-hosted threat list with the attacker's IP
+- **Automated Response**: Lambda function that stops compromised instances
+- **Alerting**: SNS notifications for security events
+- **Centralized Monitoring**: Security Hub integration
+
 
 ---
 
-## 🧰 AWS Services I Used
+## 🧰 AWS Services Used
 
 | Category       | Service         | Purpose                               |
 |----------------|------------------|----------------------------------------|
