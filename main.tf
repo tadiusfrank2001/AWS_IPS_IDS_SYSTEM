@@ -35,6 +35,15 @@ resource "random_id" "lab_suffix" {
 
 
 
+
+
+
+
+
+
+
+
+
 # ===== DATA SOURCES =====
 
 # This allows you to place your EC2s into existing network infrastructure without having to create VPCs/subnets manually.
@@ -81,6 +90,20 @@ data "aws_region" "current" {}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ===== SSH KEY PAIR =====
 
 # Creates a new SSH key pair in AWS using your local public key (.pub). 
@@ -93,6 +116,20 @@ resource "aws_key_pair" "gd_lab_keypair" {
     Name = "GuardDuty Lab Key Pair"
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ===== SECURITY GROUP =====
@@ -134,6 +171,20 @@ resource "aws_security_group" "gd_lab_sg" {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ===== EC2 INSTANCES =====
 
 # Creates a small EC2 instance using the Amazon Linux 2 AMI, which simulates the compromised system. 
@@ -166,6 +217,7 @@ user_data = file("${path.module}/scripts/compromised_server_setup.sh")
 
 # Creates a small EC2 instance using the Amazon Linux AMI 2023, which simulates the attacker system.
 # Placed in a different subnet in VPC for separation
+
 # Malicious instance (the attacker)
 resource "aws_instance" "ec2_malicious" {
   ami                         = data.aws_ami.amazon_linux_2023.id
@@ -193,6 +245,140 @@ resource "aws_eip" "malicious_ip" {
     Name = "Malicious Threat IP"
   }
 }
+
+
+
+
+
+
+
+
+# ===== S3 BUCKET FOR THREAT LIST =====
+
+# Creates an S3 bucket for the GuardDuty lab with a globally unique identifier
+resource "aws_s3_bucket" "gd_lab_bucket" {
+  bucket = "gd-lab-bucket-${random_id.lab_suffix.hex}"
+
+  tags = {
+    Name        = "GuardDuty Lab Bucket"
+    Environment = "Lab"
+  }
+}
+
+# Block public access (except what we explicitly allow via policy)
+resource "aws_s3_bucket_public_access_block" "gd_threat_list_pab" {
+  bucket = aws_s3_bucket.gd_threat_list.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+# Bucket policy allowing GuardDuty to read the threat list
+resource "aws_s3_bucket_policy" "gd_threat_list_policy" {
+  bucket = aws_s3_bucket.gd_threat_list.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowGuardDutyReadAccess"
+        Effect = "Allow"
+        Principal = {
+          Service = "guardduty.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.gd_threat_list.arn}/threatlist.txt"
+      }
+    ]
+  })
+
+   depends_on = [aws_s3_bucket_public_access_block.gd_threat_list_pab]
+}
+
+# Create the threatlist.txt file with the malicious IP automatically
+resource "aws_s3_object" "threat_list" {
+  bucket       = aws_s3_bucket.gd_threat_list.id
+  key          = "threatlist.txt"
+  content      = aws_eip.malicious_ip.public_ip
+  content_type = "text/plain"
+
+  tags = {
+    Name = "Threat Intelligence List"
+  }
+
+  depends_on = [aws_eip.malicious_ip]
+}
+
+
+
+
+
+
+
+
+
+
+
+# ===== S3 BUCKET FOR THREAT LIST =====
+
+# Creates an S3 bucket for the GuardDuty lab with a globally unique identifier
+resource "aws_s3_bucket" "gd_lab_bucket" {
+  bucket = "gd-lab-bucket-${random_id.lab_suffix.hex}"
+
+  tags = {
+    Name        = "GuardDuty Lab Bucket"
+    Environment = "Lab"
+  }
+}
+
+# Block public access (except what we explicitly allow via policy)
+resource "aws_s3_bucket_public_access_block" "gd_threat_list_pab" {
+  bucket = aws_s3_bucket.gd_threat_list.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+# Bucket policy allowing GuardDuty to read the threat list
+resource "aws_s3_bucket_policy" "gd_threat_list_policy" {
+  bucket = aws_s3_bucket.gd_threat_list.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowGuardDutyReadAccess"
+        Effect = "Allow"
+        Principal = {
+          Service = "guardduty.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.gd_threat_list.arn}/threatlist.txt"
+      }
+    ]
+  })
+
+   depends_on = [aws_s3_bucket_public_access_block.gd_threat_list_pab]
+}
+
+# Create the threatlist.txt file with the malicious IP automatically
+resource "aws_s3_object" "threat_list" {
+  bucket       = aws_s3_bucket.gd_threat_list.id
+  key          = "threatlist.txt"
+  content      = aws_eip.malicious_ip.public_ip
+  content_type = "text/plain"
+
+  tags = {
+    Name = "Threat Intelligence List"
+  }
+
+  depends_on = [aws_eip.malicious_ip]
+}
+
 
 
 
