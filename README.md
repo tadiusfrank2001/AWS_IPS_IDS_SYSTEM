@@ -97,6 +97,8 @@ The lab creates a complete security monitoring and response pipeline:
 
 4. **Confirm SNS subscription** in your email
 
+---
+
 ## 🧪 Running the Lab
 
 ### Trigger GuardDuty Detection
@@ -139,6 +141,7 @@ The lab creates a complete security monitoring and response pipeline:
 └── README.md                        # This file
 ```
 
+---
 ## 🔧 Key Components
 
 ### Security Groups
@@ -167,6 +170,8 @@ This lab uses mostly free-tier eligible resources:
 - **SNS**: First 1,000 notifications free
 
 **Estimated monthly cost**: $10-25 (after free tier)
+
+----
 
 ## 🧹 Cleanup
 
