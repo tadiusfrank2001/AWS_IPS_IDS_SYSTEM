@@ -481,6 +481,19 @@ resource "aws_sns_topic_subscription" "email_alerts" {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ===== IAM ROLE FOR LAMBDA =====
 # IAM role for the Lambda function to stop compromised instances
 resource "aws_iam_role" "gd_lab_lambda_role" {
