@@ -269,6 +269,16 @@ resource "aws_s3_bucket" "gd_lab_bucket" {
   }
 }
 
+# # Creates an S3 bucket specifically for the threat intelligence list
+resource "aws_s3_bucket" "gd_threat_list" {
+  bucket = "gd-threat-list-${random_id.lab_suffix.hex}"
+
+  tags = {
+    Name        = "GuardDuty Threat List Bucket"
+    Environment = "Lab"
+  }
+}
+
 # Block public access (except what we explicitly allow via policy)
 resource "aws_s3_bucket_public_access_block" "gd_threat_list_pab" {
   bucket = aws_s3_bucket.gd_threat_list.id
