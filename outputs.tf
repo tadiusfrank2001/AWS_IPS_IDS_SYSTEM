@@ -133,6 +133,22 @@ output "lambda_function_arn" {
 }
 
 
+# ===== ACCOUNT INFO =====
+
+output "aws_account_id" {
+  description = "Current AWS account ID"
+  value       = data.aws_caller_identity.current.account_id
+}
+
+output "aws_region" {
+  description = "Current AWS region"
+  value       = data.aws_region.current.name
+}
+
+output "random_suffix" {
+  description = "Random suffix used for unique naming"
+  value       = random_id.lab_suffix.hex
+}
 
 
 
