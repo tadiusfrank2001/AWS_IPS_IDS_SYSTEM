@@ -116,3 +116,42 @@ output "alert_email" {
   value       = var.alert_email
   sensitive   = true
 }
+
+
+
+
+ # ===== LAMBDA OUTPUTS =====
+
+output "lambda_function_name" {
+  description = "Name of the Lambda function for automated response"
+  value       = aws_lambda_function.gd_stop_compromised_instance.function_name
+}
+
+output "lambda_function_arn" {
+  description = "ARN of the Lambda function"
+  value       = aws_lambda_function.gd_stop_compromised_instance.arn
+}
+
+
+
+
+
+
+
+
+# ===== NETWORK OUTPUTS =====
+
+output "vpc_id" {
+  description = "ID of the VPC being used"
+  value       = data.aws_vpc.default.id
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = aws_security_group.gd_lab_sg.id
+}
+
+output "key_pair_name" {
+  description = "Name of the SSH key pair created"
+  value       = aws_key_pair.gd_lab_keypair.key_name
+}
