@@ -32,7 +32,7 @@ public_key_path = "~/.ssh/id_rsa.pub"
 # ===== NETWORK SECURITY =====
 # Your public IP address in CIDR format for SSH access
 # 
-# Find your public IP: curl ifconfig.me
+# Find your public IP: curl -4 ifconfig.me
 # Then format as CIDR: "YOUR_IP_HERE/32"
 # 
 # Example: if your IP is 203.0.113.45, use "203.0.113.45/32"
