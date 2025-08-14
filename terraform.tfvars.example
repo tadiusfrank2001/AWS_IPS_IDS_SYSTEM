@@ -1,0 +1,53 @@
+
+# SETUP INSTRUCTIONS:
+# 1. Copy this file: cp terraform.tfvars.example terraform.tfvars
+# 2. Edit terraform.tfvars with your actual values
+# 3. Never commit terraform.tfvars to Git (it's protected by .gitignore)
+#
+
+
+# ===== AWS CREDENTIALS =====
+# Create an IAM user with programmatic access and AdministratorAccess policy
+# Then replace these placeholder values with your actual credentials
+aws_access_key = "AKIAIOSFODNN7EXAMPLE"
+aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+
+# ===== AWS REGION =====
+# Choose your preferred AWS region
+# Recommended: us-east-1 for lowest costs
+region = "us-east-1"
+
+# ===== SSH KEY SETUP =====
+# Path to your SSH public key file
+# 
+# If you don't have an SSH key pair, create one:
+# ssh-keygen -t rsa -b 4096 -f ~/.ssh/gd-lab-key
+# 
+# This creates two files:
+# - ~/.ssh/gd-lab-key (private key - keep secure)
+# - ~/.ssh/gd-lab-key.pub (public key - use path below)
+#
+public_key_path = "~/.ssh/id_rsa.pub"
+
+# ===== NETWORK SECURITY =====
+# Your public IP address in CIDR format for SSH access
+# 
+# Find your public IP: curl ifconfig.me
+# Then format as CIDR: "YOUR_IP_HERE/32"
+# 
+# Example: if your IP is 203.0.113.45, use "203.0.113.45/32"
+#
+my_ip = "YOUR_PUBLIC_IP_HERE/32"
+
+# ===== EMAIL NOTIFICATIONS =====
+# Email address to receive GuardDuty security alerts
+# 
+# Options:
+# 1. Use your real email address
+# 2. Use a temporary email for testing:
+#    - https://maildrop.cc/ (check inbox at maildrop.cc/inbox/yourname)
+#    - https://temp-mail.io/
+#    - https://guerrillamail.com/
+#
+alert_email = "your-email@example.com"
