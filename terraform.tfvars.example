@@ -8,9 +8,8 @@
 
 # ===== AWS CREDENTIALS =====
 # Create an IAM user with programmatic access and AdministratorAccess policy
-# Then replace these placeholder values with your actual credentials
-aws_access_key = "AKIAIOSFODNN7EXAMPLE"
-aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+# Then place the access key and securre key into  ~/.aws/credentials directory in your home directory
+# This is more secure and terraform (the provider) will be able to pull them from there!
 
 
 # ===== AWS REGION =====
