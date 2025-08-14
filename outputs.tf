@@ -53,8 +53,6 @@ output "ssh_command_malicious" {
 
 
 
-
-
 # ===== S3 BUCKET OUTPUTS =====
 
 output "guardduty_bucket_name" {
@@ -73,3 +71,48 @@ output "threat_list_url" {
 }
 
 
+
+
+# ===== GUARDDUTY OUTPUTS =====
+
+output "guardduty_detector_id" {
+  description = "GuardDuty detector ID"
+  value       = aws_guardduty_detector.gd_lab_detector.id
+}
+
+output "guardduty_console_url" {
+  description = "Direct URL to GuardDuty console for this region"
+  value       = "https://console.aws.amazon.com/guardduty/home?region=${data.aws_region.current.name}#/findings"
+}
+
+
+
+
+
+
+
+
+
+# ===== SECURITY HUB OUTPUTS =====
+
+output "security_hub_console_url" {
+  description = "Direct URL to Security Hub console"
+  value       = "https://console.aws.amazon.com/securityhub/home?region=${data.aws_region.current.name}#/findings"
+}
+
+
+
+
+
+# ===== SNS OUTPUTS =====
+
+output "sns_topic_arn" {
+  description = "ARN of the SNS topic for alerts"
+  value       = aws_sns_topic.gd_lab_alerts.arn
+}
+
+output "alert_email" {
+  description = "Email address configured for alerts (you must confirm subscription)"
+  value       = var.alert_email
+  sensitive   = true
+}
