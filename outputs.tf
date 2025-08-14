@@ -153,8 +153,6 @@ output "random_suffix" {
 
 
 
-
-
 # ===== NETWORK OUTPUTS =====
 
 output "vpc_id" {
@@ -170,4 +168,49 @@ output "security_group_id" {
 output "key_pair_name" {
   description = "Name of the SSH key pair created"
   value       = aws_key_pair.gd_lab_keypair.key_name
+}
+
+
+
+
+# ===== LAB INSTRUCTIONS =====
+
+output "lab_instructions" {
+  description = "Next steps for running the GuardDuty lab"
+  value = <<EOF
+
+🚀 GUARDDUTY LAB SETUP COMPLETE! 
+
+📋 NEXT STEPS:
+1. Confirm your SNS email subscription (check your email: ${var.alert_email})
+2. Wait 5-10 minutes for GuardDuty to fully initialize
+3. SSH into compromised instance: ssh -i ~/.ssh/guardduty_lab_key ec2-user@${aws_instance.ec2_compromised.public_ip}
+4. Generate malicious traffic: curl http://${aws_eip.malicious_ip.public_ip}
+5. Check GuardDuty console: ${data.aws_region.current.name}
+6. Monitor for automatic instance shutdown and email alerts
+
+🔗 USEFUL URLS:
+- GuardDuty Console: https://console.aws.amazon.com/guardduty/home?region=${data.aws_region.current.name}#/findings
+- Security Hub: https://console.aws.amazon.com/securityhub/home?region=${data.aws_region.current.name}#/findings
+- Lambda Logs: https://console.aws.amazon.com/cloudwatch/home?region=${data.aws_region.current.name}#logsV2:log-groups
+
+⚠️  REMEMBER: This is a lab environment. Clean up with 'terraform destroy' when done!
+
+EOF
+}
+
+# ===== COST ESTIMATION =====
+
+output "estimated_hourly_cost" {
+  description = "Estimated hourly cost for running this lab (approximate)"
+  value = <<EOF
+Estimated costs per hour (us-east-1):
+- 2x EC2 instances (t2.micro + t3.micro): ~$0.02/hour
+- GuardDuty: ~$0.0042/hour 
+- Security Hub: ~$0.0033/hour
+- S3, Lambda, SNS: <$0.01/hour
+TOTAL: ~$0.03-0.04/hour
+
+Note: Costs may vary by region and usage. Always check current AWS pricing.
+EOF
 }
