@@ -85,8 +85,10 @@ The lab creates a complete security monitoring and response pipeline:
    public_key_path  = "~/.ssh/id_rsa.pub"
    alert_email      = "your-email@example.com"
    ```
-4. ** AWS Credentials **
+4. **AWS Credentials**
 
+   Download aws cli and Create a file to store credentials so terraform can access them
+   
    ```hcl
    mkdir -p ~/.aws
    nano ~/.aws/credentials
