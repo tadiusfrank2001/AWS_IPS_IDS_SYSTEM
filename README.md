@@ -80,13 +80,25 @@ The lab creates a complete security monitoring and response pipeline:
    
    Edit `terraform.tfvars` with your values:
    ```hcl
-   aws_access_key    = "your-access-key"
-   aws_secret_key    = "your-secret-key"
    region           = "us-east-1"
    my_ip            = "YOUR.PUBLIC.IP.ADDRESS/32"
    public_key_path  = "~/.ssh/id_rsa.pub"
    alert_email      = "your-email@example.com"
    ```
+4. ** AWS Credentials **
+
+   ```hcl
+   mkdir -p ~/.aws
+   nano ~/.aws/credentials
+   ```
+
+   Open file and store access key and secret for secure access NEVER HARD CODE ANYTHING!!!!
+   
+```in
+aws_access_key_id = YOUR_ACCESS_KEY
+aws_secret_access_key = YOUR_SECRET_KEY
+```
+
 
 3. **Deploy the infrastructure**:
    ```bash
